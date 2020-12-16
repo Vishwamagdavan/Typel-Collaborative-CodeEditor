@@ -21,19 +21,25 @@ io.on('connection',(socket)=>{
             console.log(error);
             return error;
         }
+        socket.emit('message',{user:'admin',text:`${user.name} welcome to ${user.room}`});
+        socket.broadcast.to(user.room).emit('message',{user:'admin',text:`${user.name} has joined`});
         socket.join(user.room);
-        console.log(user.room);
     })
 
     socket.on('code-change',(code)=>{
         console.log(socket.id);
         const user=getUser(socket.id);
-        console.log(socket.id);
+        console.log(user);
         if(user)
             socket.broadcast.to(user.room).emit('code-update', code);
         // io.to(user.room).broadcast.emit('code-update',code),code-update
         // console.log(code);
         // socket.broadcast.emit('code-update',code);
+    });
+
+    socket.on('chatMessage',(message,callback)=>{
+        const user=getUser(socket.id);
+        io.to(user.name).emit('message',{user:user.name,text:message})
     });
     socket.on('disconnect', (evt) => {
         console.log('SOMEONE LEFT')
