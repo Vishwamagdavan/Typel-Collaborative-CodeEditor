@@ -1,11 +1,10 @@
 import { React, useState, useEffect } from "react";
-import { ThemeProvider, Paper, makeStyles, Grid, Typography, Box ,Button} from "@material-ui/core";
+import { ThemeProvider, Paper, makeStyles, Grid, Typography, Box} from "@material-ui/core";
 import queryString from 'query-string';
 import { ControlledEditor } from "@monaco-editor/react";
 import { io } from 'socket.io-client';
 import theme from './Themes';
 import Navbar from "./homescreen/Navbar";
-import TextField from '@material-ui/core/TextField';
 let socket;
 
 const useStyles = makeStyles({
@@ -36,33 +35,28 @@ function Mainscreen({ location }) {
 
     useEffect(() => {
         const { name, room } = queryString.parse(location.search);
-        setName(name);
+        socket = io(ENDPOINT);
         setRoom(room);
-
-        socket = io(ENDPOINT, { transport: ['websocket'] });
-        socket.emit('join', { name, room });
-        console.log(socket);
-        return () => {
-            socket.disconnect(true);
-        }
-    }, [ENDPOINT, location.search]);
+        setName(name)
+    
+        socket.emit('join', { name, room }, (error) => {
+          if(error) {
+            alert(error);
+          }
+        });
+      }, [ENDPOINT, location.search]);
 
     // chatMessages
     useEffect(() => {
-        socket.on('message', (message) => {
-            setMessages([...messages, message]);
-        })
-    }, [messages])
+        socket.on('message', message => {
+          setMessages(messages => [ ...messages, message ]);
+        });
+    }, []);
 
     // Send to Socket 
     useEffect(() => {
-
-        socket = io(ENDPOINT, {
-            transports: ['websocket']
-        });
-
         socket.emit('code-change', codeupdate);
-    }, [ENDPOINT, codeupdate])
+    }, [codeupdate])
 
 
 
