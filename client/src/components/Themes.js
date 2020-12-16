@@ -4,7 +4,7 @@ import { blue } from '@material-ui/core/colors';
 import { Link } from 'react-router-dom';
 const theme = createMuiTheme({
     palette: {
-        type: "light",
+        type: "dark",
         primary: {
             main: '#333333'
         },

@@ -66,9 +66,6 @@ function Mainscreen({ location }) {
             setCode(data);
             console.log('CLIENT ' + data);
         })
-        return () => {
-            socket.disconnect(true);
-        }
     }, []);
 
     const sendMessage=(e)=>{

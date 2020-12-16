@@ -31,10 +31,10 @@ io.on('connect',(socket)=>{
       });
 
     socket.on('code-change',(code)=>{
-        console.log(socket.id);
         const user=getUser(socket.id);
         if(user)
-            socket.broadcast.to(user.room).emit('code-update', code);
+            io.to(user.room).broadcast.emit('code-update',code);
+            // socket.broadcast.to(user.room).emit('code-update', code);
         // io.to(user.room).broadcast.emit('code-update',code),code-update
         // console.log(code);
         // socket.broadcast.emit('code-update',code);
