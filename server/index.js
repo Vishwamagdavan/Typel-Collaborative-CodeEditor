@@ -34,18 +34,19 @@ io.on('connect',(socket)=>{
         const user=getUser(socket.id);
         if(user){
             io.to(user.room).emit('code-update',code);
-            console.log('working with code-change')
-
         }
             // socket.broadcast.to(user.room).emit('code-update', code);
         // io.to(user.room).broadcast.emit('code-update',code),code-update
         // console.log(code);
         // socket.broadcast.emit('code-update',code);
     });
-
+    socket.on('canvas-data',(data)=>{
+        const user=getUser(socket.id);
+        if(user)
+            io.to(user.room).emit('canvas-data',data);
+    })
     socket.on('chatMessage', (message, callback) => {
         const user = getUser(socket.id);
-        console.log(socket.id);
         console.log(user);
         if(user)
             io.to(user.room).emit('message', { user: user.name, text: message });
@@ -54,17 +55,19 @@ io.on('connect',(socket)=>{
       });
     socket.on('disconnect', (evt) => {
         const user=removeUser(socket.id);
-        if(user)
+        if(user){
             io.to(user.room).emit('message',{user:'admin',text:`${user.name} has left the room`});
-        console.log('SOMEONE LEFT')
+            console.log(`${user.name} has left`)
+        }
     })
 })
 
 io.on('disconnect', (evt) => {
     const user=removeUser(socket.id);
-    if(user)
+    if(user){
         io.to(user.room).emit('message',{user:'admin',text:`${user.name} has left the room`});
-    console.log('SOMEONE LEFT')
+        console.log('SOMEONE LEFT')
+    }
 })
 
 app.use(router);

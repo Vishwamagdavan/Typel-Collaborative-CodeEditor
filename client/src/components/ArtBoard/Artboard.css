@@ -1,0 +1,17 @@
+.container{
+    width: 100%;
+    height: 100%;
+    background-color: black;
+}
+
+.container__colorpicker{
+    text-align: center;
+}
+
+.container__board{
+    height: 80vh;
+    width: 100%;
+    margin: auto;
+    margin-top: 1%;
+    background-color: whitesmoke;
+}

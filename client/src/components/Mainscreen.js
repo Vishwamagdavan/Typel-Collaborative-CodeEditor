@@ -10,6 +10,7 @@ import theme from './Themes';
 import Navbar from "./homescreen/Navbar";
 import Home from './Home';
 import Message from './Chatbox/Message'
+import Artboard from "./ArtBoard/Artboard";
 let socket;
 
 const useStyles = makeStyles({
@@ -88,8 +89,7 @@ function Mainscreen({ location }) {
         setValue(newValue);
     };
 
-    // Socket for Joining Room
-
+    // Socket for Joining Room 
     useEffect(() => {
         const { name, room } = queryString.parse(location.search);
         socket = io(ENDPOINT);
@@ -104,21 +104,21 @@ function Mainscreen({ location }) {
         });
     }, [ENDPOINT, location.search]);
 
-    // chatMessages
+    // Receive message from Socket.io
     useEffect(() => {
         socket.on('message', message => {
             setMessages(messages => [...messages, message]);
         });
     }, []);
 
-    // Send to Socket 
+    // Send to code-change to server
     useEffect(() => {
         socket.emit('code-change', codeupdate);
     }, [codeupdate])
 
 
 
-    // Recive from the socket
+    // Recive updated code from the server
     useEffect(() => {
         socket.on('code-update', (data) => {
             setCode(data);
@@ -205,10 +205,10 @@ function Mainscreen({ location }) {
                                 />
                                 <Button type="submit" variant="contained" color="secondary">Compile</Button>
                         </TabPanel>
-                        <TabPanel value={value} index={1}>
-                            <canvas>
-                                
-                            </canvas>
+                        <TabPanel value={value} index={2}>
+                            <Artboard room={room} name={name}>
+
+                            </Artboard>
                         </TabPanel>
 
                     </Grid>
@@ -218,6 +218,9 @@ function Mainscreen({ location }) {
                                 <Typography variant="body1">Room:{room}</Typography>
                                 <Typography variant="body1">Your Name:{name}</Typography>
 
+                                <ScrollToBottom>
+                                        {messages.map((m, i) => <div key={i}><Message name={name} message={m} /></div>)}
+                                </ScrollToBottom>
                                 <form className={classes.form}>
                                     <input
                                         placeholder="type your message"
@@ -226,9 +229,6 @@ function Mainscreen({ location }) {
                                         onKeyPress={e => e.key === 'Enter' ? sendMessage(e) : null} />
                                     <input type="submit" placeholder="send" />
                                 </form>
-                                <ScrollToBottom>
-                                    {messages.map((m, i) => <div key={i}><Message name={name} message={m} /></div>)}
-                                </ScrollToBottom>
                             </Box>
                             </Grid>
                         </Grid>
