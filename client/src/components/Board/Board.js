@@ -3,7 +3,7 @@ import {useEffect} from 'react';
 import './Board.css';
 import io from 'socket.io-client';
 import {ENDPOINT} from '../config'
-
+let timeout;
 function Board({room,name}){
     let socket=io.connect(ENDPOINT);
     useEffect(()=>{
@@ -16,8 +16,10 @@ function Board({room,name}){
             }
             image.src=data;
         })
+    });
+    useEffect(()=>{
         drawOnCanvas();
-    })
+    });
     const drawOnCanvas=()=>{
         var canvas = document.querySelector('#paint');
     var ctx = canvas.getContext('2d');
@@ -60,10 +62,11 @@ function Board({room,name}){
         ctx.lineTo(mouse.x, mouse.y);
         ctx.closePath();
         ctx.stroke();
-        setInterval(()=>{
-            var base64ImageData=canvas[0].toDataUrl('image/png');
-            socket.emit('canvas-data',base64ImageData);
-        },1000)
+        if(timeout !== undefined) clearTimeout(timeout);
+        timeout = setTimeout(function(){
+            var base64ImageData = canvas.toDataURL("image/png",1.0);
+            socket.emit("canvas-data", base64ImageData);
+        }, 1000)
             
     };
     }

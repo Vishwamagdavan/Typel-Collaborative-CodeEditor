@@ -42,6 +42,8 @@ io.on('connect',(socket)=>{
     });
     socket.on('canvas-data',(data)=>{
         const user=getUser(socket.id);
+        console.log(user);
+        console.log(socket.id);
         if(user)
             io.to(user.room).emit('canvas-data',data);
     })
