@@ -275,8 +275,8 @@ function Mainscreen({ location }) {
                                 <div className="container">
                                     <div className="container__colorpicker">
                                         <Button onClickCapture={drawOnCanvas}>Start Drawing</Button>
-                                    Stroke Size:
-                        <Select labelId="strokesize" id="select" value={strokesize} onChange={(e) => { setStrokesize(e.target.value) }}>
+                                        Stroke Size:
+                                        <Select labelId="strokesize" id="select" value={strokesize} onChange={(e) => { setStrokesize(e.target.value) }}>
                                             <MenuItem value="5">5</MenuItem>
                                             <MenuItem value="10">10</MenuItem>
                                             <MenuItem value="15">15</MenuItem>
