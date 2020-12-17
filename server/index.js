@@ -32,8 +32,11 @@ io.on('connect',(socket)=>{
 
     socket.on('code-change',(code)=>{
         const user=getUser(socket.id);
-        if(user)
-            io.to(user.room).broadcast.emit('code-update',code);
+        if(user){
+            io.to(user.room).emit('code-update',code);
+            console.log('working with code-change')
+
+        }
             // socket.broadcast.to(user.room).emit('code-update', code);
         // io.to(user.room).broadcast.emit('code-update',code),code-update
         // console.log(code);

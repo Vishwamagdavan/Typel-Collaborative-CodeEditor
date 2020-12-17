@@ -1,17 +1,19 @@
 import { React, useState, useEffect } from "react";
-import { ThemeProvider, Paper, makeStyles, Grid, Typography, Box} from "@material-ui/core";
+import { ThemeProvider, Paper, makeStyles, Grid, Typography, Box, Select,MenuItem,Button } from "@material-ui/core";
+import { Redirect } from "react-router-dom";
 import queryString from 'query-string';
 import { ControlledEditor } from "@monaco-editor/react";
 import { io } from 'socket.io-client';
 import theme from './Themes';
 import Navbar from "./homescreen/Navbar";
+import Home from './Home';
 let socket;
 
 const useStyles = makeStyles({
     editor__papper: {
         marginTop: 8
     },
-    
+
 
 })
 function Mainscreen({ location }) {
@@ -22,10 +24,17 @@ function Mainscreen({ location }) {
     const [messages, setMessages] = useState('');
     const [code, setCode] = useState('//Write your Code');
     const [codeupdate, setCodeupdate] = useState('')
+    const [language,setLanguage]=useState('cpp');
+    const[fontsize,setFontsize]=useState(20);
+    const [selflanguage,setSelflanguage]=useState('cpp');
+    const[selffontsize,setSelffontsize]=useState(20);
     const ENDPOINT = 'localhost:5000';
 
     const options = {
-        fontSize: 20
+        fontSize: fontsize
+    }
+    const selfoptions = {
+        fontSize: selffontsize
     }
 
     function onchangeHandler(ev, event) {
@@ -38,18 +47,19 @@ function Mainscreen({ location }) {
         socket = io(ENDPOINT);
         setRoom(room);
         setName(name)
-    
+
         socket.emit('join', { name, room }, (error) => {
-          if(error) {
-            alert(error);
-          }
+            if (error) {
+                alert(error)
+                return Home;
+            }
         });
-      }, [ENDPOINT, location.search]);
+    }, [ENDPOINT, location.search]);
 
     // chatMessages
     useEffect(() => {
         socket.on('message', message => {
-          setMessages(messages => [ ...messages, message ]);
+            setMessages(messages => [...messages, message]);
         });
     }, []);
 
@@ -68,49 +78,92 @@ function Mainscreen({ location }) {
         })
     }, []);
 
-    const sendMessage=(e)=>{
+    const sendMessage = (e) => {
         e.preventDefault();
-        if(message){
-            socket.emit('chatMessage',message,()=>setMessage(''));
+        if (message) {
+            socket.emit('chatMessage', message, () => setMessage(''));
         }
     }
-    console.log(message,messages);
+    console.log(message, messages);
     return (
         <ThemeProvider theme={theme}>
             <Paper style={{ height: "100vh" }} >
                 <Navbar />
                 <Paper className={classes.editor__papper}>
+                        
 
                     <Grid container justify="flex-start">
-                        <Grid>
+                        <Grid item xs={false} sm={5} md={5}>
+                            <h1>Live Code</h1>
+                        Language:
+                        <Select labelId="language" id="select" value={language} style={{padding:10}} onChange={(e)=>{setLanguage(e.target.value);}}>
+                            <MenuItem value="javascript">Javascript</MenuItem>
+                            <MenuItem value="cpp">C++</MenuItem>
+                            <MenuItem value="c">C</MenuItem>
+                            <MenuItem value="java">Java</MenuItem>
+                            <MenuItem value="python">Python</MenuItem>
+                        </Select>
+                        FontSize:
+                        <Select labelId="fontsize" id="select" value={fontsize} onChange={(e)=>{setFontsize(e.target.value)}}>
+                            <MenuItem value="5">5</MenuItem>
+                            <MenuItem value="10">10</MenuItem>
+                            <MenuItem value="15">15</MenuItem>
+                            <MenuItem value="20">20</MenuItem>
+                            <MenuItem value="25">25</MenuItem>
+                            <MenuItem value="30">30</MenuItem>
+                            <MenuItem value="35">35</MenuItem>
+                        </Select>
                             <ControlledEditor
                                 width="80vh"
-                                height="90vh"
-                                language="cpp"
+                                height="60vh"
+                                language={language}
                                 theme="dark"
                                 value={code}
                                 options={options}
                                 onChange={onchangeHandler}
                             />
                         </Grid>
-                        <Grid>
+                        <Grid item xs={false} sm={5} md={5}>
+                        <h1>Your Code</h1>
+                        Language:
+                        <Select labelId="language" id="select" value={selflanguage} style={{padding:10}} onChange={(e)=>{setSelflanguage(e.target.value);}}>
+                            <MenuItem value="javascript">Javascript</MenuItem>
+                            <MenuItem value="cpp">C++</MenuItem>
+                            <MenuItem value="c">C</MenuItem>
+                            <MenuItem value="java">Java</MenuItem>
+                            <MenuItem value="python">Python</MenuItem>
+                        </Select>
+                        FontSize:
+                        <Select labelId="fontsize" id="select" value={selffontsize} onChange={(e)=>{setSelffontsize(e.target.value)}}>
+                            <MenuItem value="5">5</MenuItem>
+                            <MenuItem value="10">10</MenuItem>
+                            <MenuItem value="15">15</MenuItem>
+                            <MenuItem value="20">20</MenuItem>
+                            <MenuItem value="25">25</MenuItem>
+                            <MenuItem value="30">30</MenuItem>
+                            <MenuItem value="35">35</MenuItem>
+                        </Select>
                             <ControlledEditor
-                                width="70vh"
-                                height="90vh"
-                                language="cpp"
+                                width="80vh"
+                                height="60vh"
+                                language={selflanguage}
                                 theme="dark"
-                                options={options}
+                                options={selfoptions}
                             />
+                        <Button type="submit" variant="contained" color="secondary">Compile</Button>
                         </Grid>
-                        <Grid>
+                        <Grid item sm={2} md={2}>
                             <Box>
-                                <Typography variant="p">Room:{room}</Typography><br/>
-                                <Typography variant="p">Your Name:{name}</Typography>
+                            <h1>Message Box</h1>
+                                <Typography variant="body1">Room:{room}</Typography>
+                                <Typography variant="body1">Your Name:{name}</Typography>
                                 <form className={classes.form}>
-                                    <input 
-                                    value={message}
-                                    onChange={(e)=>setMessage(e.target.value)}
-                                    onKeyPress={e=>e.key==='Enter'?sendMessage(e):null}/>
+                                    <input
+                                        placeholder="type your message"
+                                        value={message}
+                                        onChange={(e) => setMessage(e.target.value)}
+                                        onKeyPress={e => e.key === 'Enter' ? sendMessage(e) : null} />
+                                    <input type="submit" labelId="send" placeholder="send"/>
                                 </form>
                             </Box>
                         </Grid>
