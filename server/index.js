@@ -46,8 +46,6 @@ io.on('connect',(socket)=>{
         console.log(socket.id);
         if(user)
             io.to(user.room).emit('canvas-data',data);
-        else
-            console.log('user not defined')
     })
     socket.on('chatMessage', (message, callback) => {
         const user = getUser(socket.id);

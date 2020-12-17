@@ -74,6 +74,8 @@ function Mainscreen({ location }) {
     const [fontsize, setFontsize] = useState(20);
     const [selflanguage, setSelflanguage] = useState('cpp');
     const [selffontsize, setSelffontsize] = useState(20);
+    const [strokecolor, setStrokecolor] = useState('blue');
+    const [strokesize, setStrokesize] = useState(5);
     const ENDPOINT = 'localhost:5000';
 
     const options = {
@@ -127,13 +129,6 @@ function Mainscreen({ location }) {
         })
     }, []);
 
-    const sendMessage = (e) => {
-        e.preventDefault();
-        if (message) {
-            socket.emit('chatMessage', message, () => setMessage(''));
-        }
-    }
-    console.log(message, messages);
     useEffect(() => {
         socket.on('canvas-data', (data) => {
             var image = new Image();
@@ -144,11 +139,17 @@ function Mainscreen({ location }) {
             }
             image.src = data;
         })
-    });
-    useEffect(() => {
-        drawOnCanvas();
-    },[]);
+    }, []);
+
+    const sendMessage = (e) => {
+        e.preventDefault();
+        if (message) {
+            socket.emit('chatMessage', message, () => setMessage(''));
+        }
+    }
+    console.log(message, messages);
     const drawOnCanvas = () => {
+        console.log('mouse movement')
         var canvas = document.querySelector('#paint');
         var ctx = canvas.getContext('2d');
         var sketch = document.querySelector('#sketch');
@@ -170,10 +171,10 @@ function Mainscreen({ location }) {
 
 
         /* Drawing on Paint App */
-        ctx.lineWidth = 5;
+        ctx.lineWidth = strokesize;
         ctx.lineJoin = 'round';
         ctx.lineCap = 'round';
-        ctx.strokeStyle = 'blue';
+        ctx.strokeStyle = strokecolor;
 
         canvas.addEventListener('mousedown', function (e) {
             canvas.addEventListener('mousemove', onPaint, false);
@@ -189,9 +190,11 @@ function Mainscreen({ location }) {
             ctx.lineTo(mouse.x, mouse.y);
             ctx.closePath();
             ctx.stroke();
-            // if (timeout !== undefined) clearTimeout(timeout);
+            if (timeout !== undefined) clearTimeout(timeout);
+            timeout = setTimeout(function () {
                 var base64ImageData = canvas.toDataURL("image/png", 1.0);
                 socket.emit("canvas-data", base64ImageData);
+            }, 1000)
 
         };
     }
@@ -270,11 +273,23 @@ function Mainscreen({ location }) {
                             <TabPanel value={value} index={2}>
                                 <div className="container">
                                     <div className="container__colorpicker">
-                                        <input type="color" />
+                                        <Button onClickCapture={drawOnCanvas}>Start Drawing</Button>
+                                    Stroke Size:
+                        <Select labelId="strokesize" id="select" value={strokesize} onChange={(e) => { setStrokesize(e.target.value) }}>
+                                            <MenuItem value="5">5</MenuItem>
+                                            <MenuItem value="10">10</MenuItem>
+                                            <MenuItem value="15">15</MenuItem>
+                                            <MenuItem value="20">20</MenuItem>
+                                            <MenuItem value="25">25</MenuItem>
+                                            <MenuItem value="30">30</MenuItem>
+                                            <MenuItem value="35">35</MenuItem>
+                                        </Select>
+                                        Choose Your Color:
+                                        <input type="color" onChange={(e) => { setStrokecolor(e.target.value) }} />
                                     </div>
                                     <div className="container__board">
                                         <div className="sketch" id="sketch">
-                                            <canvas width="100%" height="100%" className="paint" id="paint"></canvas>
+                                            <canvas className="paint" id="paint" ></canvas>
                                         </div>
                                     </div>
                                 </div>
