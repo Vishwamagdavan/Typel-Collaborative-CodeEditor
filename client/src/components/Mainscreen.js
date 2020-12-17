@@ -1,6 +1,5 @@
 import { React, useState, useEffect } from "react";
 import { ThemeProvider, Paper, makeStyles, Grid, Typography, Box, Select, MenuItem, Button, Tabs, Tab, AppBar } from "@material-ui/core";
-import { Redirect } from "react-router-dom";
 import PropTypes from 'prop-types';
 import ScrollToBottom from 'react-scroll-to-bottom';
 import queryString from 'query-string';
@@ -10,9 +9,11 @@ import theme from './Themes';
 import Navbar from "./homescreen/Navbar";
 import Home from './Home';
 import Message from './Chatbox/Message'
-import Artboard from "./ArtBoard/Artboard";
-let socket;
+import './Mainscreen.css';
 
+
+let socket;
+let timeout;
 const useStyles = makeStyles({
     root: {
         flexGrow: 1,
@@ -133,23 +134,84 @@ function Mainscreen({ location }) {
         }
     }
     console.log(message, messages);
+    useEffect(() => {
+        socket.on('canvas-data', (data) => {
+            var image = new Image();
+            var canvas = document.querySelector('#paint');
+            var ctx = canvas.getContext('2d');
+            image.onload = () => {
+                ctx.drawImage(image, 0, 0);
+            }
+            image.src = data;
+        })
+    });
+    useEffect(() => {
+        drawOnCanvas();
+    },[]);
+    const drawOnCanvas = () => {
+        var canvas = document.querySelector('#paint');
+        var ctx = canvas.getContext('2d');
+        var sketch = document.querySelector('#sketch');
+        var sketch_style = getComputedStyle(sketch);
+        canvas.width = parseInt(sketch_style.getPropertyValue('width'));
+        canvas.height = parseInt(sketch_style.getPropertyValue('height'));
+
+        var mouse = { x: 0, y: 0 };
+        var last_mouse = { x: 0, y: 0 };
+
+        /* Mouse Capturing Work */
+        canvas.addEventListener('mousemove', function (e) {
+            last_mouse.x = mouse.x;
+            last_mouse.y = mouse.y;
+
+            mouse.x = e.pageX - this.offsetLeft;
+            mouse.y = e.pageY - this.offsetTop;
+        }, false);
+
+
+        /* Drawing on Paint App */
+        ctx.lineWidth = 5;
+        ctx.lineJoin = 'round';
+        ctx.lineCap = 'round';
+        ctx.strokeStyle = 'blue';
+
+        canvas.addEventListener('mousedown', function (e) {
+            canvas.addEventListener('mousemove', onPaint, false);
+        }, false);
+
+        canvas.addEventListener('mouseup', function () {
+            canvas.removeEventListener('mousemove', onPaint, false);
+        }, false);
+
+        var onPaint = function () {
+            ctx.beginPath();
+            ctx.moveTo(last_mouse.x, last_mouse.y);
+            ctx.lineTo(mouse.x, mouse.y);
+            ctx.closePath();
+            ctx.stroke();
+            // if (timeout !== undefined) clearTimeout(timeout);
+                var base64ImageData = canvas.toDataURL("image/png", 1.0);
+                socket.emit("canvas-data", base64ImageData);
+
+        };
+    }
     return (
         <ThemeProvider theme={theme}>
             <Paper style={{ height: "100vh" }} >
                 <Navbar />
                 <Paper className={classes.editor__papper}>
                     <Grid container justify="flex-start">
-                    <Grid item xs={false} sm={9} md={9}>
+                        <Grid item xs={false} sm={9} md={9}>
                             <AppBar position="static">
-                                <Tabs value={value} onChange={tabhandleChange} aria-label="simple tabs example"  variant="fullWidth">
+                                <Tabs value={value} onChange={tabhandleChange} aria-label="simple tabs example" variant="fullWidth">
                                     <Tab label="Live Code" {...a11yProps(0)} />
                                     <Tab label="Your Code" {...a11yProps(1)} />
                                     <Tab label="Canvas" {...a11yProps(2)} />
                                 </Tabs>
                             </AppBar>
 
-                        <TabPanel value={value} index={0}>
-                            Language:
+                            <TabPanel value={value} index={0}>
+                                Language:
                         <Select labelId="language" id="select" value={language} style={{ padding: 10 }} onChange={(e) => { setLanguage(e.target.value); }}>
                                     <MenuItem value="javascript">Javascript</MenuItem>
                                     <MenuItem value="cpp">C++</MenuItem>
@@ -176,9 +238,9 @@ function Mainscreen({ location }) {
                                     options={options}
                                     onChange={onchangeHandler}
                                 />
-                        </TabPanel>
-                        <TabPanel value={value} index={1}>
-                            Language:
+                            </TabPanel>
+                            <TabPanel value={value} index={1}>
+                                Language:
                         <Select labelId="language" id="select" value={selflanguage} style={{ padding: 10 }} onChange={(e) => { setSelflanguage(e.target.value); }}>
                                     <MenuItem value="javascript">Javascript</MenuItem>
                                     <MenuItem value="cpp">C++</MenuItem>
@@ -204,22 +266,29 @@ function Mainscreen({ location }) {
                                     options={selfoptions}
                                 />
                                 <Button type="submit" variant="contained" color="secondary">Compile</Button>
-                        </TabPanel>
-                        <TabPanel value={value} index={2}>
-                            <Artboard room={room} name={name}>
+                            </TabPanel>
+                            <TabPanel value={value} index={2}>
+                                <div className="container">
+                                    <div className="container__colorpicker">
+                                        <input type="color" />
+                                    </div>
+                                    <div className="container__board">
+                                        <div className="sketch" id="sketch">
+                                            <canvas width="100%" height="100%" className="paint" id="paint"></canvas>
+                                        </div>
+                                    </div>
+                                </div>
+                            </TabPanel>
 
-                            </Artboard>
-                        </TabPanel>
-
-                    </Grid>
-                    <Grid item sm={3} md={3}>
+                        </Grid>
+                        <Grid item sm={3} md={3}>
                             <Box justifyContent="center">
                                 <h1>Message Box</h1>
                                 <Typography variant="body1">Room:{room}</Typography>
                                 <Typography variant="body1">Your Name:{name}</Typography>
 
                                 <ScrollToBottom>
-                                        {messages.map((m, i) => <div key={i}><Message name={name} message={m} /></div>)}
+                                    {messages.map((m, i) => <div key={i}><Message name={name} message={m} /></div>)}
                                 </ScrollToBottom>
                                 <form className={classes.form}>
                                     <input
@@ -230,8 +299,8 @@ function Mainscreen({ location }) {
                                     <input type="submit" placeholder="send" />
                                 </form>
                             </Box>
-                            </Grid>
                         </Grid>
+                    </Grid>
                 </Paper>
 
             </Paper>
