@@ -1,12 +1,14 @@
 import { React, useState, useEffect } from "react";
 import { ThemeProvider, Paper, makeStyles, Grid, Typography, Box, Select,MenuItem,Button } from "@material-ui/core";
 import { Redirect } from "react-router-dom";
+import ScrollToBottom from 'react-scroll-to-bottom';
 import queryString from 'query-string';
 import { ControlledEditor } from "@monaco-editor/react";
 import { io } from 'socket.io-client';
 import theme from './Themes';
 import Navbar from "./homescreen/Navbar";
 import Home from './Home';
+import Message from './Chatbox/Message'
 let socket;
 
 const useStyles = makeStyles({
@@ -21,7 +23,7 @@ function Mainscreen({ location }) {
     const [name, setName] = useState('');
     const [room, setRoom] = useState('');
     const [message, setMessage] = useState('');
-    const [messages, setMessages] = useState('');
+    const [messages, setMessages] = useState([]);
     const [code, setCode] = useState('//Write your Code');
     const [codeupdate, setCodeupdate] = useState('')
     const [language,setLanguage]=useState('cpp');
@@ -157,14 +159,18 @@ function Mainscreen({ location }) {
                             <h1>Message Box</h1>
                                 <Typography variant="body1">Room:{room}</Typography>
                                 <Typography variant="body1">Your Name:{name}</Typography>
+                                
                                 <form className={classes.form}>
                                     <input
                                         placeholder="type your message"
                                         value={message}
                                         onChange={(e) => setMessage(e.target.value)}
                                         onKeyPress={e => e.key === 'Enter' ? sendMessage(e) : null} />
-                                    <input type="submit" labelId="send" placeholder="send"/>
+                                    <input type="submit"  placeholder="send"/>
                                 </form>
+                                <ScrollToBottom>
+                                    {messages.map((m, i) => <div key={i}><Message name={name} message={m} /></div>)}
+                                </ScrollToBottom>
                             </Box>
                         </Grid>
                     </Grid>
