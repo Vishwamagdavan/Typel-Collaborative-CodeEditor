@@ -133,6 +133,7 @@ function Mainscreen({ location }) {
         socket.on('canvas-data', (data) => {
             var image = new Image();
             var canvas = document.querySelector('#paint');
+            if(canvas==null) return;
             var ctx = canvas.getContext('2d');
             image.onload = () => {
                 ctx.drawImage(image, 0, 0);
