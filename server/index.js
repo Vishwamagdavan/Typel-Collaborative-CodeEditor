@@ -53,11 +53,17 @@ io.on('connect',(socket)=>{
         callback();
       });
     socket.on('disconnect', (evt) => {
+        const user=removeUser(socket.id);
+        if(user)
+            io.to(user.room).emit('message',{user:'admin',text:`${user.name} has left the room`});
         console.log('SOMEONE LEFT')
     })
 })
 
 io.on('disconnect', (evt) => {
+    const user=removeUser(socket.id);
+    if(user)
+        io.to(user.room).emit('message',{user:'admin',text:`${user.name} has left the room`});
     console.log('SOMEONE LEFT')
 })
 

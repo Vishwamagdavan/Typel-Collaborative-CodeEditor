@@ -205,6 +205,11 @@ function Mainscreen({ location }) {
                                 />
                                 <Button type="submit" variant="contained" color="secondary">Compile</Button>
                         </TabPanel>
+                        <TabPanel value={value} index={1}>
+                            <canvas>
+                                
+                            </canvas>
+                        </TabPanel>
 
                     </Grid>
                     <Grid item sm={3} md={3}>
