@@ -7,8 +7,8 @@ import { ControlledEditor } from "@monaco-editor/react";
 import { io } from 'socket.io-client';
 import theme from './Themes';
 import Navbar from "./homescreen/Navbar";
-import Home from './Home';
 import Message from './Chatbox/Message';
+import { Redirect } from 'react-router-dom';
 import './Mainscreen.css';
 
 
@@ -76,6 +76,7 @@ function Mainscreen({ location }) {
     const [selffontsize, setSelffontsize] = useState(20);
     const [strokecolor, setStrokecolor] = useState('blue');
     const [strokesize, setStrokesize] = useState(5);
+    const[redirect,setRedirect]=useState(false);
     const ENDPOINT = 'localhost:5000';
 
     const options = {
@@ -101,8 +102,8 @@ function Mainscreen({ location }) {
 
         socket.emit('join', { name, room }, (error) => {
             if (error) {
-                alert(error)
-                return Home;
+                alert('Username already in use!')
+                setRedirect(true);
             }
         });
     }, [ENDPOINT, location.search]);
@@ -205,6 +206,7 @@ function Mainscreen({ location }) {
         context.clearRect(0, 0, canvas.width, canvas.height);
     }
     return (
+        (redirect)?(<Redirect to={"/"}/>):
         <ThemeProvider theme={theme}>
             <Paper style={{ height: "100vh" }} >
                 <Navbar room={room} name={name}/>
@@ -307,7 +309,7 @@ function Mainscreen({ location }) {
                             <Box justifyContent="center" className="message__container">
                                 <h1 style={{textAlign:'center'}}>Message Box</h1>
                                 <Typography variant="body1">Room:{room}</Typography>
-                                <Typography variant="body1">Your Name:{name}</Typography>
+                                {/* <Typography variant="body1">Your Name:{name}</Typography> */}
                                 
                                 
                                 <div >
