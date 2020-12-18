@@ -1,5 +1,5 @@
 import { React, useState, useEffect } from "react";
-import { ThemeProvider, Paper, makeStyles, Grid, Typography, Box, Select, MenuItem, Button, Tabs, Tab, AppBar } from "@material-ui/core";
+import { ThemeProvider,TextField, Paper, makeStyles, Grid, Typography, Box, Select, MenuItem, Button, Tabs, Tab, AppBar } from "@material-ui/core";
 import PropTypes from 'prop-types';
 import ScrollToBottom from 'react-scroll-to-bottom';
 import queryString from 'query-string';
@@ -8,7 +8,8 @@ import { io } from 'socket.io-client';
 import theme from './Themes';
 import Navbar from "./homescreen/Navbar";
 import Home from './Home';
-import Message from './Chatbox/Message'
+import Message from './Chatbox/Message';
+import { Link } from 'react-router-dom';
 import './Mainscreen.css';
 
 
@@ -199,6 +200,11 @@ function Mainscreen({ location }) {
 
         };
     }
+    const clearframeHandler=()=>{
+        var canvas = document.querySelector('#paint');
+        const context = canvas.getContext('2d');
+        context.clearRect(0, 0, canvas.width, canvas.height);
+    }
     return (
         <ThemeProvider theme={theme}>
             <Paper style={{ height: "100vh" }} >
@@ -274,7 +280,7 @@ function Mainscreen({ location }) {
                             <TabPanel value={value} index={2}>
                                 <div className="container">
                                     <div className="container__colorpicker">
-                                        <Button onClickCapture={drawOnCanvas}>Start Drawing</Button>
+                                        <Button variant="outlined" onClickCapture={drawOnCanvas}>Start Drawing</Button>
                                         Stroke Size:
                                         <Select labelId="strokesize" id="select" value={strokesize} onChange={(e) => { setStrokesize(e.target.value) }}>
                                             <MenuItem value="5">5</MenuItem>
@@ -287,6 +293,7 @@ function Mainscreen({ location }) {
                                         </Select>
                                         Choose Your Color:
                                         <input type="color" onChange={(e) => { setStrokecolor(e.target.value) }} />
+                                        <Button variant="outlined" onClick={clearframeHandler}>Clear Frame</Button>
                                     </div>
                                     <div className="container__board">
                                         <div className="sketch" id="sketch">
@@ -298,22 +305,31 @@ function Mainscreen({ location }) {
 
                         </Grid>
                         <Grid item sm={3} md={3}>
-                            <Box justifyContent="center">
-                                <h1>Message Box</h1>
+                            <Box justifyContent="center" className="message__container">
+                                <h1 style={{textAlign:'center'}}>Message Box</h1>
                                 <Typography variant="body1">Room:{room}</Typography>
                                 <Typography variant="body1">Your Name:{name}</Typography>
-
-                                <ScrollToBottom>
-                                    {messages.map((m, i) => <div key={i}><Message name={name} message={m} /></div>)}
-                                </ScrollToBottom>
-                                <form className={classes.form}>
-                                    <input
-                                        placeholder="type your message"
-                                        value={message}
-                                        onChange={(e) => setMessage(e.target.value)}
-                                        onKeyPress={e => e.key === 'Enter' ? sendMessage(e) : null} />
-                                    <input type="submit" placeholder="send" />
-                                </form>
+                                <Link  to={`/`} style={{ textDecoration: 'none' }}>
+                                    <Button color="secondary" variant="outlined">Leave Room</Button>
+                                </Link>
+                                
+                                <div >
+                                    <ScrollToBottom className="message__box">
+                                        {messages.map((m, i) => <div key={i}><Message name={name} message={m} /></div>)}
+                                    </ScrollToBottom>
+                                </div>
+                                
+                                        <form className={classes.form}>
+                                            <TextField
+                                                fullWidth
+                                                color="secondary"
+                                                className="message__input"
+                                                placeholder="type your message"
+                                                value={message}
+                                                onChange={(e) => setMessage(e.target.value)}
+                                                onKeyPress={e => e.key === 'Enter' ? sendMessage(e) : null} />
+                                            
+                                        </form>
                             </Box>
                         </Grid>
                     </Grid>

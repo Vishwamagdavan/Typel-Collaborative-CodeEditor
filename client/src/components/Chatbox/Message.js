@@ -1,13 +1,8 @@
-import { Typography} from "@material-ui/core";
+import './Message.css'
 const Message=({name,message:{user,text}})=>{
-    let sentByCurrentUser=false;
-    const trimmedname=name.trim().toLowerCase();
-    if(name===trimmedname){
-        sentByCurrentUser=true;
-    }
     return(
-        <div>
-            <p><strong>{user}</strong>:{text}</p>
+        <div className="message">
+            <p className="message__text"><strong>{user}</strong>:{text}</p>
         </div>
     )
 }

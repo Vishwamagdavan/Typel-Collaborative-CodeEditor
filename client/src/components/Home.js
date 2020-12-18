@@ -76,8 +76,8 @@ export default function Home() {
                             </Avatar>
                             <Typography component="h1" variant="h5"> Create a Room </Typography>
                             <form className={classes.form} noValidate>
-                                <TextField variant="outlined" fullWidth margin="normal" id="name" label="#online-name" name="name"  onChange={(e)=>setName(e.target.value)}/>
-                                <TextField variant="outlined" fullWidth margin="normal" name="room" label="#room-name" type="text" id="room" onChange={(e)=>setRoom(e.target.value)} />
+                                <TextField variant="outlined" fullWidth margin="normal" id="name" label="#online-name" name="name" onChange={(e) => setName(e.target.value)} />
+                                <TextField variant="outlined" fullWidth margin="normal" name="room" label="#room-name" type="text" id="room" onChange={(e) => setRoom(e.target.value)} />
                                 <Link onClick={event => (!name || !room) ? event.preventDefault() : null} to={`/chat?name=${name}&room=${room}`} style={{ textDecoration: 'none' }}>
                                     <Button type="submit" fullWidth variant="contained" color="secondary" className={classes.submit} > Join </Button>
                                 </Link>
