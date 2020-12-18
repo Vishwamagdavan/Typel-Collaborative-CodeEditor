@@ -77,7 +77,8 @@ function Mainscreen({ location }) {
     const [strokecolor, setStrokecolor] = useState('blue');
     const [strokesize, setStrokesize] = useState(5);
     const[redirect,setRedirect]=useState(false);
-    const ENDPOINT = 'localhost:5000';
+    // const ENDPOINT = 'localhost:5000';
+    const ENDPOINT = 'https://typleio.herokuapp.com/';
 
     const options = {
         fontSize: fontsize
