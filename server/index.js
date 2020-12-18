@@ -50,8 +50,11 @@ io.on('connect',(socket)=>{
     socket.on('chatMessage', (message, callback) => {
         const user = getUser(socket.id);
         console.log(user);
-        if(user)
-            io.to(user.room).emit('message', { user: user.name, text: message });
+        if(user){
+            setTimeout(()=>{
+                io.to(user.room).emit('message', { user: user.name, text: message });
+            },1000)
+        }
     
         callback();
       });

@@ -1,9 +1,9 @@
 import Avatar from '@material-ui/core/Avatar';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import TextField from '@material-ui/core/TextField';
-import { GroupAddOutlined, GitHub } from '@material-ui/icons';
+import { GroupAddOutlined } from '@material-ui/icons';
 import theme from './Themes';
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 import { Grid, Typography, ThemeProvider, Paper, makeStyles, Button, Box } from "@material-ui/core";
 import Background from '../bg.png';
 // import BackgroundGIF from '../background.gif';

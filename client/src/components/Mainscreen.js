@@ -78,7 +78,7 @@ function Mainscreen({ location }) {
     const [strokesize, setStrokesize] = useState(5);
     const[redirect,setRedirect]=useState(false);
     // const ENDPOINT = 'localhost:5000';
-    const ENDPOINT = 'https://typleio.herokuapp.com/';
+    const ENDPOINT = 'localhost:5000';
 
     const options = {
         fontSize: fontsize
