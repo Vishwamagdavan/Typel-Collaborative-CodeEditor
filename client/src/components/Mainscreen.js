@@ -9,7 +9,6 @@ import theme from './Themes';
 import Navbar from "./homescreen/Navbar";
 import Home from './Home';
 import Message from './Chatbox/Message';
-import { Link } from 'react-router-dom';
 import './Mainscreen.css';
 
 
@@ -208,7 +207,7 @@ function Mainscreen({ location }) {
     return (
         <ThemeProvider theme={theme}>
             <Paper style={{ height: "100vh" }} >
-                <Navbar />
+                <Navbar room={room} name={name}/>
                 <Paper className={classes.editor__papper}>
                     <Grid container justify="flex-start">
                         <Grid item xs={false} sm={9} md={9}>
@@ -292,7 +291,7 @@ function Mainscreen({ location }) {
                                             <MenuItem value="35">35</MenuItem>
                                         </Select>
                                         Choose Your Color:
-                                        <input type="color" onChange={(e) => { setStrokecolor(e.target.value) }} />
+                                        <input type="color" onChange={(e) => { setStrokecolor(e.target.value); drawOnCanvas(); }} />
                                         <Button variant="outlined" onClick={clearframeHandler}>Clear Frame</Button>
                                     </div>
                                     <div className="container__board">
@@ -309,9 +308,7 @@ function Mainscreen({ location }) {
                                 <h1 style={{textAlign:'center'}}>Message Box</h1>
                                 <Typography variant="body1">Room:{room}</Typography>
                                 <Typography variant="body1">Your Name:{name}</Typography>
-                                <Link  to={`/`} style={{ textDecoration: 'none' }}>
-                                    <Button color="secondary" variant="outlined">Leave Room</Button>
-                                </Link>
+                                
                                 
                                 <div >
                                     <ScrollToBottom className="message__box">
