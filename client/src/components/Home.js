@@ -68,7 +68,7 @@ export default function Home() {
                         <Box mt={5}>
                         </Box>
                         <div className={classes.paper}>
-                            <Typography variant="h2">Typl.io</Typography>
+                            <Typography variant="h2">Typel.io</Typography>
                             <Typography variant="body2">Create Room - Invite - Code Together</Typography>
                             <Box m={7} />
                             <Avatar className={classes.avatar} >
